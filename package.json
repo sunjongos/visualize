@@ -1,0 +1,24 @@
+{
+  "name": "visualize",
+  "version": "1.0.0",
+  "description": "Stitch MCP Ultra-Luxurious Visual Architecture & Concept Visualization Engine",
+  "main": "scripts/generate_visualize.py",
+  "scripts": {
+    "generate": "python scripts/generate_visualize.py"
+  },
+  "keywords": [
+    "visualize",
+    "stitch-mcp",
+    "architecture-diagram",
+    "mermaid",
+    "chartjs",
+    "claude-code",
+    "antigravity"
+  ],
+  "author": "CEO Sunjong Choi & LUCA AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunjongos/visualize.git"
+  }
+}
