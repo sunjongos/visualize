@@ -21,15 +21,29 @@ def generate_visualize_html(source_path_or_text, output_file):
         title_match = re.search(r'<title>(.*?)</title>', content, re.IGNORECASE) or re.search(r'^#\s+(.*)', content, re.MULTILINE)
         title = title_match.group(1).strip() if title_match else os.path.basename(source_path_or_text)
         subtitle = "Stitch MCP 시네마틱 1페이지 대시보드 및 아키텍처 다이어그램"
+        
+        headings = re.findall(r'<h[23][^>]*>(.*?)</h[23]>', content, re.IGNORECASE) or re.findall(r'^##\s+(.*)', content, re.MULTILINE)
+        if not headings:
+            headings = ["시스템 핵심 레이어", "실시간 오케스트레이션", "팩트 무결성 락킹"]
+            
+        arch_cards = []
+        icons = ["🏛️", "⚙️", "🛡️", "🔮", "🩺", "📊"]
+        for i, h in enumerate(headings[:6]):
+            clean_h = re.sub(r'<[^>]+>', '', h)
+            arch_cards.append({
+                "icon": icons[i % len(icons)],
+                "title": f"{i+1}. {clean_h}",
+                "desc": f"핵심 인지 요인 및 팩트 온톨로지 바인딩 노드 #{i+1}",
+                "detail": f"{clean_h}에 대한 세부 아키텍처 및 메트릭 분석 데이터입니다."
+            })
     else:
         title = f"{source_path_or_text} (Stitch MCP Visual Architecture)"
         subtitle = f"Stitch MCP 디자인 시스템으로 시각화한 {source_path_or_text} 대시보드입니다."
-
-    arch_cards = [
-        {"icon": "🏛️", "title": "1. 시스템 핵심 레이어", "desc": "주요 모듈 및 데이터 흐름 파이프라인", "detail": "시스템 뼈대를 구성하는 핵심 레이어 및 노드 연결 구조입니다."},
-        {"icon": "⚙️", "title": "2. 실시간 오케스트레이션", "desc": "비동기 상태 제어 및 트리거 발동", "detail": "이벤트 트리거 및 상태 전이 다이어그램입니다."},
-        {"icon": "🛡️", "title": "3. 팩트 무결성 락킹", "desc": "SQLite / Neo4j 온톨로지 DB 검증", "detail": "좌뇌 팩트 DB와 결합된 무결성 락킹 레이어입니다."}
-    ]
+        arch_cards = [
+            {"icon": "🏛️", "title": "1. 시스템 핵심 레이어", "desc": "주요 모듈 및 데이터 흐름 파이프라인", "detail": "시스템 뼈대를 구성하는 핵심 레이어 및 노드 연결 구조입니다."},
+            {"icon": "⚙️", "title": "2. 실시간 오케스트레이션", "desc": "비동기 상태 제어 및 트리거 발동", "detail": "이벤트 트리거 및 상태 전이 다이어그램입니다."},
+            {"icon": "🛡️", "title": "3. 팩트 무결성 락킹", "desc": "SQLite / Neo4j 온톨로지 DB 검증", "detail": "좌뇌 팩트 DB와 결합된 무결성 락킹 레이어입니다."}
+        ]
 
     topology_cards = [
         {"icon": "🧬", "title": "[[Obsidian_Wiki_Node_1]]", "desc": "장기 메모리 연동 노드 및 하위 관계망", "detail": "옵시디언 LLM-Wiki에 영구 기록된 지식 트리플입니다."},
@@ -41,6 +55,10 @@ def generate_visualize_html(source_path_or_text, output_file):
       <div class="arch-icon">{c['icon']}</div>
       <h3>{c['title']}</h3>
       <p>{c['desc']}</p>
+      <div class="card-footer">
+        <span>🔎 상세보기 클릭</span>
+        <span>Fact-Locked ✓</span>
+      </div>
     </div>
     """ for c in arch_cards])
 
@@ -49,6 +67,10 @@ def generate_visualize_html(source_path_or_text, output_file):
       <div class="arch-icon">{c['icon']}</div>
       <h3>{c['title']}</h3>
       <p>{c['desc']}</p>
+      <div class="card-footer">
+        <span>🔎 상세보기 클릭</span>
+        <span>Obsidian Linked 🔗</span>
+      </div>
     </div>
     """ for c in topology_cards])
 
@@ -67,7 +89,7 @@ def generate_visualize_html(source_path_or_text, output_file):
     print(f"Generated Stitch MCP Visual HTML at: {output_file}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Stitch MCP Visualize Generator Engine")
+    parser = argparse.ArgumentParser(description="Stitch MCP Visualize Generator Engine v2.0")
     parser.add_argument("--source", required=True, help="Topic or file path to visualize")
     parser.add_argument("--output", default="dist/visualize_stitch.html", help="Output HTML filepath")
     args = parser.parse_args()
